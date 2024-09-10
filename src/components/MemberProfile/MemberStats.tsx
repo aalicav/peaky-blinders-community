@@ -7,7 +7,7 @@ const MotionBox = motion(Box as any);
 interface MemberStatsProps {
   liveParticipations: number;
   coins: number;
-  memberSince: string;
+  memberSince: Date | string;
 }
 
 const MemberStats: React.FC<MemberStatsProps> = ({ liveParticipations, coins, memberSince }) => {

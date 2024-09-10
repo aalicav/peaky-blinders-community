@@ -32,8 +32,8 @@ import axios from "axios";
 import { CheckCircleIcon } from "@chakra-ui/icons";
 import { motion } from "framer-motion";
 import yup from "yup";
-import { IMember } from "@/models/Member";
 import memberSchema from "@/schemas/memberSchema";
+import { IMember } from "@/models/Member";
 
 // Defina o esquema de validação com Yup
 const inputFocusLight = {
@@ -47,9 +47,9 @@ const Form1 = ({
   errors,
   control,
 }: {
-  register: UseFormRegister<IMember>;
+  register: UseFormRegister<FormValues>;
   errors: FieldErrors<IMember>;
-  control: Control<IMember>;
+  control: Control<FormValues>;
 }) => {
   return (
     <Flex color="turquoise.300" flexDirection="column" gap="20px">
@@ -143,9 +143,9 @@ const Form2 = ({
   errors,
   control,
 }: {
-  register: UseFormRegister<IMember>;
+  register: UseFormRegister<FormValues>;
   errors: FieldErrors<IMember>;
-  control: Control<IMember>;
+  control: Control<FormValues>;
 }) => {
   return (
     <Flex direction="column" color="turquoise.400">
@@ -197,9 +197,9 @@ const Form3 = ({
   errors,
   control,
 }: {
-  register: UseFormRegister<IMember>;
+  register: UseFormRegister<FormValues>;
   errors: FieldErrors<IMember>;
-  control: Control<IMember>;
+  control: Control<any>;
 }) => {
   return (
     <Flex
@@ -216,7 +216,7 @@ const Form3 = ({
             control={control}
             name="belongedToOtherFamily"
             render={({ field: { onChange, value } }) => (
-              <RadioGroup onChange={onChange} value={value}>
+              <RadioGroup onChange={onChange} value={String(value)}>
                 <Stack direction="column">
                   <Radio value="true" colorScheme="turquoise">
                     Sim
@@ -241,12 +241,12 @@ const Form3 = ({
             control={control}
             name="isStreamedAndAgened"
             render={({ field: { onChange, value } }) => (
-              <RadioGroup onChange={onChange} value={value}>
+              <RadioGroup onChange={onChange} value={String(value)}>
                 <Stack direction="column">
-                  <Radio value="true" colorScheme="turquoise">
+                  <Radio value={"true"} colorScheme="turquoise">
                     Sim
                   </Radio>
-                  <Radio value="false" colorScheme="turquoise">
+                  <Radio value={"false"} colorScheme="turquoise">
                     Não
                   </Radio>
                 </Stack>
@@ -324,13 +324,13 @@ export default function Multistep() {
   };
 
   const handleNext = async () => {
-    const fields: (keyof FormValues)[] = [
+    const fields: any[] = [
       ["email", "birthDate", "whatsapp", "password"],
       ["tiktokProfile", "tiktokUsage"],
       ["belongedToOtherFamily", "isStreamedAndAgened", "brasaoReceivedDate"],
-    ][activeStep];
+    ];
 
-    const isValid = await trigger(fields);
+    const isValid = await trigger(fields[activeStep]);
     if (isValid) {
       setActiveStep((prev) => prev + 1);
     }
@@ -414,14 +414,15 @@ export default function Multistep() {
                 </MotionBox>
               ))}
             </Flex>
-            {activeStep === 0 ? (
+            {activeStep === 0 && (
               <Form1 register={register} errors={errors} control={control} />
-            ) : activeStep === 1 ? (
+            )}
+            {activeStep === 1 && (
               <Form2 register={register} errors={errors} control={control} />
-            ) : (
+            )}
+            {activeStep === 2 && (
               <Form3 register={register} errors={errors} control={control} />
             )}
-
             <ButtonGroup mt="5%" w="100%">
               <Flex w="100%" justifyContent="space-between">
                 <Flex>

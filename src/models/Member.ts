@@ -6,6 +6,7 @@ export interface IMember extends Document {
   birthDate: Date;
   whatsapp: string;
   tiktokProfile: string;
+  password: string;
   tiktokUsage: string;
   belongedToOtherFamily: boolean;
   isStreamedAndAgened: boolean;
