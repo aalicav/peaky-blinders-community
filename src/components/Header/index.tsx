@@ -123,6 +123,7 @@ export default function Header() {
                 fontSize={'sm'}
                 fontWeight={400}
                 variant={'link'}
+                cursor="pointer"
                 onClick={handleViewProfile}
                 color="turquoise.300"
                 _hover={{

@@ -33,7 +33,7 @@ export async function GET(req: NextRequest) {
       .skip(start)
       .limit(limit);
 
-    const response = NextResponse.json(testimonials);
+    const response = NextResponse.json({data: testimonials ?? []});
     response.headers.set("X-Total-Count", totalCount.toString());
     response.headers.set("Access-Control-Expose-Headers", "X-Total-Count");
 

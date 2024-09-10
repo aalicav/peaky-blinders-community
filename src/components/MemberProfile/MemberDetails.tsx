@@ -86,6 +86,14 @@ const MemberDetails: React.FC<MemberDetailsProps> = ({ member }) => {
             Participações em Lives:
           </Text>
           <Text color="white">{member.liveParticipations.length}</Text>
+          <HStack>
+            <Text fontWeight="bold" color="gray.400">
+              Status:
+            </Text>
+            <Badge colorScheme={member.isJailed ? "red" : "green"}>
+              {member.isJailed ? "Preso" : "Livre"}
+            </Badge>
+          </HStack>
         </VStack>
       </Flex>
     </MotionBox>

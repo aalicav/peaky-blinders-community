@@ -90,9 +90,6 @@ export const LoginArea = () => {
       >
         <VStack spacing={6}>
           <Heading color="turquoise.300">Entrar na sua conta</Heading>
-          <Text color="gray.400">
-            Ou <Link color="turquoise.300">comece seu teste de 14 dias</Link>
-          </Text>
           <form onSubmit={handleSubmit} style={{ width: '100%' }}>
             <VStack spacing={4}>
               <FormControl isInvalid={!!errors.email}>

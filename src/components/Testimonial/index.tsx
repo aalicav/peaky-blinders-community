@@ -1,5 +1,5 @@
-"use client"
-import React, { useEffect, useState } from 'react';
+"use client";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Flex,
@@ -11,13 +11,13 @@ import {
   Icon,
   Avatar,
   Spinner,
-} from '@chakra-ui/react';
-import { motion, useAnimation } from 'framer-motion';
-import axios from 'axios';
-import Slider from 'react-slick';
-import 'slick-carousel/slick/slick.css';
-import 'slick-carousel/slick/slick-theme.css';
-import { ChevronLeft, ChevronRight, Star } from 'lucide-react';
+} from "@chakra-ui/react";
+import { motion, useAnimation } from "framer-motion";
+import axios from "axios";
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+import { ChevronLeft, ChevronRight, Star } from "lucide-react";
 
 interface Testimonial {
   _id: string;
@@ -29,7 +29,9 @@ interface Testimonial {
 
 const MotionBox = motion(Box as any);
 
-const TestimonialCard: React.FC<{ testimonial: Testimonial }> = ({ testimonial }) => {
+const TestimonialCard: React.FC<{ testimonial: Testimonial }> = ({
+  testimonial,
+}) => {
   return (
     <MotionBox
       bg="gray.800"
@@ -54,8 +56,8 @@ const TestimonialCard: React.FC<{ testimonial: Testimonial }> = ({ testimonial }
           <Icon
             key={i}
             as={Star}
-            color={i < testimonial.rating ? 'turquoise.400' : 'gray.600'}
-            fill={i < testimonial.rating ? 'turquoise.400' : 'gray.600'}
+            color={i < testimonial.rating ? "turquoise.400" : "gray.600"}
+            fill={i < testimonial.rating ? "turquoise.400" : "gray.600"}
             w={4}
             h={4}
           />
@@ -72,11 +74,16 @@ const PrevArrow = (props: any) => {
   const { className, style, onClick } = props;
   return (
     <Box
-      className={className}
       style={{ ...style, display: "block", left: "-30px" }}
       onClick={onClick}
     >
-      <Icon as={ChevronLeft} w={8} h={8} color="turquoise.400" />
+      <Icon
+        className={className}
+        as={ChevronLeft}
+        w={8}
+        h={8}
+        color="turquoise.400"
+      />
     </Box>
   );
 };
@@ -85,11 +92,16 @@ const NextArrow = (props: any) => {
   const { className, style, onClick } = props;
   return (
     <Box
-      className={className}
       style={{ ...style, display: "block", right: "-30px" }}
       onClick={onClick}
     >
-      <Icon as={ChevronRight} w={8} h={8} color="turquoise.400" />
+      <Icon
+        className={className}
+        as={ChevronRight}
+        w={8}
+        h={8}
+        color="turquoise.400"
+      />
     </Box>
   );
 };
@@ -105,13 +117,15 @@ const Testimonials: React.FC = () => {
   const fetchTestimonials = async (page: number) => {
     setIsLoading(true);
     try {
-      const response = await axios.get(`/api/testimonials?page=${page}&limit=5`);
-      setTestimonials(prev => [...prev, ...response.data.data]);
+      const response = await axios.get(
+        `/api/testimonials?page=${page}&limit=5`
+      );
+      setTestimonials((prev) => [...prev, ...response.data.data]);
       setCurrentPage(response.data.currentPage);
       setTotalPages(response.data.totalPages);
       controls.start({ opacity: 1, y: 0 });
     } catch (error) {
-      console.error('Erro ao buscar depoimentos:', error);
+      console.error("Erro ao buscar depoimentos:", error);
     } finally {
       setIsLoading(false);
     }
@@ -143,19 +157,19 @@ const Testimonials: React.FC = () => {
 
   if (isLoading && testimonials.length === 0) {
     return (
-      <Flex height="100vh" alignItems="center" justifyContent="center" bg="gray.900">
+      <Flex
+        height="100vh"
+        alignItems="center"
+        justifyContent="center"
+        bg="gray.900"
+      >
         <Spinner size="xl" color="turquoise.400" thickness="4px" />
       </Flex>
     );
   }
 
   return (
-    <Box
-      py={20}
-      bg="gray.900"
-      minHeight="100vh"
-      pt="120px"
-    >
+    <Box py={20} bg="gray.900" minHeight="100vh" pt="120px">
       <Container maxW="6xl">
         <VStack spacing={12}>
           <MotionBox
@@ -165,7 +179,7 @@ const Testimonials: React.FC = () => {
           >
             <Heading
               as="h1"
-              fontSize={{ base: '3xl', md: '4xl', lg: '5xl' }}
+              fontSize={{ base: "3xl", md: "4xl", lg: "5xl" }}
               textAlign="center"
               mb={4}
               color="turquoise.300"
@@ -174,21 +188,25 @@ const Testimonials: React.FC = () => {
               O que nossos membros dizem
             </Heading>
             <Text
-              fontSize={{ base: 'lg', md: 'xl' }}
+              fontSize={{ base: "lg", md: "xl" }}
               textAlign="center"
               color="gray.300"
               fontFamily="'Inter', sans-serif"
               maxW="2xl"
               mx="auto"
             >
-              Descubra como a Família Peaky Blinders tem impactado a vida de nossos membros
+              Descubra como a Família Peaky Blinders tem impactado a vida de
+              nossos membros
             </Text>
           </MotionBox>
 
           <Box width="100%" maxW="800px" mx="auto" position="relative">
             <Slider ref={(slider) => setSliderRef(slider)} {...settings}>
               {testimonials.map((testimonial) => (
-                <TestimonialCard key={testimonial._id} testimonial={testimonial} />
+                <TestimonialCard
+                  key={testimonial._id}
+                  testimonial={testimonial}
+                />
               ))}
             </Slider>
           </Box>
