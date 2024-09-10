@@ -197,7 +197,7 @@ const Form3 = ({
   errors,
   control,
 }: {
-  register: UseFormRegister<FormValues>;
+  register: UseFormRegister<any>;
   errors: FieldErrors<IMember>;
   control: Control<any>;
 }) => {
