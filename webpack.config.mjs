@@ -1,7 +1,6 @@
-import { withImages } from "next-images";
-const config = withImages({
+const config = {
   test: /\.svg$/,
   use: ["@svgr/webpack"],
-});
+};
 
 export default config;
