@@ -12,9 +12,22 @@ export async function scrapeTikTokProfile(url: string) {
     });
 
     const page = await browser.newPage();
-    await page.goto(url, { waitUntil: 'networkidle0' });
 
-    await page.waitForSelector('div[data-e2e="user-avatar"]', { timeout: 5000 });
+    // Intercepta e bloqueia o carregamento de imagens, folhas de estilo e fontes
+    await page.setRequestInterception(true);
+    page.on('request', (req) => {
+      if (['image', 'stylesheet', 'font', 'other'].includes(req.resourceType())) {
+        req.abort(); // Bloqueia o carregamento de recursos desnecessários
+      } else {
+        req.continue(); // Continua o carregamento de scripts e documentos essenciais
+      }
+    });
+
+    // Define o timeout para o carregamento da página e espera que não haja mais requisições de rede por 500ms
+    await page.goto(url, { waitUntil: 'networkidle2', timeout: 60000 });
+
+    // Aumenta o tempo de espera pelo seletor, caso a página demore a carregar
+    await page.waitForSelector('div[data-e2e="user-avatar"]', { timeout: 10000 });
 
     const avatarDiv = await page.$('div[data-e2e="user-avatar"]');
     const profileImgUrl = await avatarDiv?.evaluate((el) => {
