@@ -3,6 +3,8 @@ import { generateToken } from "@/utils/jwt";
 import Member from "@/models/Member";
 import connectToDatabase from "@/db/mongo";
 
+export const maxDuration = 5
+
 export async function POST(req: NextRequest) {
   try {
     await connectToDatabase();
