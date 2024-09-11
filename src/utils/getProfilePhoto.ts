@@ -5,7 +5,7 @@ export async function scrapeTikTokProfile(url: string) {
   const browser = await puppeteer.launch({
     args: chromium.args,
     defaultViewport: chromium.defaultViewport,
-    executablePath: await chromium.executablePath(),
+    channel: 'chrome',
     headless: chromium.headless,
   });
 
