@@ -6,18 +6,23 @@ import { scrapeTikTokProfile } from "@/utils/getProfilePhoto";
 
 export async function POST(req: NextRequest) {
   // A rota POST não precisa de autenticação
-  console.log("Função POST chamada");
   try {
     await connectToDatabase();
-    console.log("Conectado ao banco de dados");
     const data = await req.json();
+
+    // Verificar se já existe um membro com o mesmo e-mail
+    const existingMember = await Member.findOne({ email: data.email });
+    if (existingMember) {
+      return NextResponse.json(
+        { error: "Já existe um usuário com este e-mail" },
+        { status: 400 }
+      );
+    }
 
     // Buscar informações do TikTok
     if (data.tiktokProfile) {
       try {
-        console.log(data.tiktokProfile);
         const userPhoto = await scrapeTikTokProfile(data.tiktokProfile);
-        console.log(userPhoto)
         data.tiktokUsername = data.tiktokProfile.split("@")[1];
         if (userPhoto) {
           data.tiktokProfilePicture = userPhoto;

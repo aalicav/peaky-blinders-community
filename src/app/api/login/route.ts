@@ -16,8 +16,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
     }
 
-    console.log(password, member.password);
-
     const isPasswordValid = member.password === password;
     if (!isPasswordValid) {
       return NextResponse.json({ error: "Não autorizado" }, { status: 401 });

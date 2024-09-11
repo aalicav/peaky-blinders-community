@@ -302,7 +302,9 @@ export default function Multistep() {
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     try {
       const response = await axios.post("/api/members", data);
-      console.log(response.data);
+      if (response.status === 400) {
+        throw new Error(response.data?.error);
+      }
       setIsSubmitted(true);
       toast({
         title: "Formulário enviado com sucesso!",
@@ -311,11 +313,11 @@ export default function Multistep() {
         duration: 5000,
         isClosable: true,
       });
-    } catch (error) {
-      console.error("Erro ao enviar formulário:", error);
+    } catch (error: any) {
       toast({
         title: "Erro ao enviar formulário.",
-        description: "Ocorreu um erro. Por favor, tente novamente.",
+        description:
+          error?.message ?? "Ocorreu um erro. Por favor, tente novamente.",
         status: "error",
         duration: 5000,
         isClosable: true,
