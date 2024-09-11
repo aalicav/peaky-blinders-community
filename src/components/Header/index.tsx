@@ -28,9 +28,9 @@ import {
   ChevronDownIcon,
   ChevronRightIcon,
 } from "@chakra-ui/icons";
-import { useRouter } from 'next/navigation';
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import Cookies from 'js-cookie';
+import Cookies from "js-cookie";
 
 export default function Header() {
   const router = useRouter();
@@ -38,22 +38,22 @@ export default function Header() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
-    const token = Cookies.get('token');
+    const token = Cookies.get("token");
     setIsLoggedIn(!!token);
   }, []);
 
   const handleLogin = () => {
-    router.push('/login');
+    router.push("/login");
   };
 
   const handleLogout = () => {
-    Cookies.remove('token');
+    Cookies.remove("token");
     setIsLoggedIn(false);
-    router.push('/');
+    router.push("/");
   };
 
   const handleViewProfile = () => {
-    router.push('/member-profile');
+    router.push("/member-profile");
   };
 
   return (
@@ -119,10 +119,10 @@ export default function Header() {
           {isLoggedIn ? (
             <>
               <Button
-                as={'a'}
-                fontSize={'sm'}
+                as={"a"}
+                fontSize={"sm"}
                 fontWeight={400}
-                variant={'link'}
+                variant={"link"}
                 cursor="pointer"
                 onClick={handleViewProfile}
                 color="turquoise.300"
@@ -166,9 +166,17 @@ export default function Header() {
 
       <Drawer placement="left" onClose={onClose} isOpen={isOpen}>
         <DrawerOverlay>
-          <DrawerContent>
+          <DrawerContent color="#ffff">
             <DrawerCloseButton />
-            <DrawerHeader>Navegação</DrawerHeader>
+            <DrawerHeader
+              cursor="pointer"
+              onClick={() => {
+                router.push("/");
+                onClose();
+              }}
+            >
+              Home
+            </DrawerHeader>
             <DrawerBody>
               <MobileNav onClose={onClose} />
             </DrawerBody>
@@ -330,12 +338,12 @@ interface NavItem {
 
 const NAV_ITEMS: Array<NavItem> = [
   {
-    label: "Sobre",
+    label: "Agência",
     href: "about",
   },
   {
     label: "Mural do amor",
-    href: "testimonials"
+    href: "testimonials",
   },
   {
     label: "Regras da familia",
