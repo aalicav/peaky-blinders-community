@@ -172,11 +172,7 @@ const Testimonials: React.FC = () => {
     <Box py={20} bg="gray.900" minHeight="100vh" pt="120px">
       <Container maxW="6xl">
         <VStack spacing={12}>
-          <MotionBox
-            initial={{ opacity: 0, y: -50 }}
-            animate={controls}
-            transition={{ duration: 0.5 }}
-          >
+          <Box>  {/* Substituído MotionBox por Box temporariamente */}
             <Heading
               as="h1"
               fontSize={{ base: "3xl", md: "4xl", lg: "5xl" }}
@@ -184,6 +180,7 @@ const Testimonials: React.FC = () => {
               mb={4}
               color="turquoise.300"
               fontFamily="'Montserrat', sans-serif"
+              style={{ opacity: '1 !important' }}
             >
               O que nossos membros dizem
             </Heading>
@@ -194,11 +191,12 @@ const Testimonials: React.FC = () => {
               fontFamily="'Inter', sans-serif"
               maxW="2xl"
               mx="auto"
+              style={{ opacity: '1 !important' }}
             >
               Descubra como a Família Peaky Blinders tem impactado a vida de
               nossos membros
             </Text>
-          </MotionBox>
+          </Box>
 
           <Box width="100%" maxW="800px" mx="auto" position="relative">
             <Slider ref={(slider) => setSliderRef(slider)} {...settings}>
