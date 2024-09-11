@@ -7,9 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "postinstall": "node node_modules/puppeteer/install.js",
-    "install": "npm install puppeteer && node node_modules/puppeteer/install.js",
-    "prepare": "node node_modules/puppeteer/install.js"
+    "postinstall": "node node_modules/puppeteer/install.mjs",
+    "install": "npm install puppeteer && node node_modules/puppeteer/install.mjs",
+    "prepare": "node node_modules/puppeteer/install.mjs"
   },
   "dependencies": {
     "@chakra-ui/icons": "^2.1.1",
