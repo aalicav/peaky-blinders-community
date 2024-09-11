@@ -2,12 +2,24 @@ import puppeteer from "puppeteer-core";
 import chromium from "@sparticuz/chromium";
 
 export async function scrapeTikTokProfile(url: string) {
-  const browser = await puppeteer.launch({
-    args: chromium.args,
-    defaultViewport: chromium.defaultViewport,
-    channel: 'chrome',
-    headless: chromium.headless,
-  });
+  const options = process.env.AWS_LAMBDA_FUNCTION_VERSION
+    ? {
+        args: chromium.args,
+        defaultViewport: chromium.defaultViewport,
+        executablePath: await chromium.executablePath(),
+        headless: chromium.headless,
+      }
+    : {
+        args: [],
+        executablePath:
+          process.platform === "win32"
+            ? "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
+            : process.platform === "linux"
+            ? "/usr/bin/google-chrome"
+            : "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+      };
+
+  const browser = await puppeteer.launch(options);
 
   const page = await browser.newPage();
 
