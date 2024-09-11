@@ -1,21 +1,32 @@
 import puppeteer from "puppeteer";
 
 export async function scrapeTikTokProfile(url: string) {
-  // Iniciar o navegador em modo headless e abrir uma nova página
-  const browser = await puppeteer.launch({ headless: true });
+  let browser;
+
+  if (process.env.NODE_ENV === "production") {
+    const chromium = (await import('chrome-aws-lambda'))?.default;
+    browser = await chromium.puppeteer.launch({
+      args: chromium.args,
+      defaultViewport: chromium.defaultViewport,
+      executablePath: await chromium.executablePath,
+      headless: chromium.headless,
+    });
+  } else {
+    browser = await puppeteer.launch();
+  }
+
   const page = await browser.newPage();
 
-  // Navegar para a URL fornecida
   await page.goto(url);
 
-  // Esperar pela div com data-e2e="user-avatar"
   await page.waitForSelector('div[data-e2e="user-avatar"]');
 
-  // Modificação no $SELECTION_PLACEHOLDER$
-  const avatarDiv = await page.$('div[data-e2e="user-avatar"]'); // Encontra a div com data-e2e="user-avatar"
-  const profileImgUrl = avatarDiv ? await page.evaluate(el => el.querySelector("img")?.getAttribute("src"), avatarDiv) : null; // Seleciona o src da imagem
+  const avatarDiv: any = await page.$('div[data-e2e="user-avatar"]');
+  const profileImgUrl = await avatarDiv?.evaluate((el: any) => {
+    const imgElement = el.querySelector("img");
+    return imgElement ? imgElement.getAttribute("src") : null;
+  });
 
-  // Fechar o navegador
   await browser.close();
 
   return profileImgUrl;
