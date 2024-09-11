@@ -2,18 +2,12 @@ import puppeteer from "puppeteer-core";
 import chromium from "@sparticuz/chromium";
 
 export async function scrapeTikTokProfile(url: string) {
-  let browser;
-
-  if (process.env.NODE_ENV === "production") {
-    browser = await puppeteer.launch({
-      args: chromium.args,
-      defaultViewport: chromium.defaultViewport,
-      executablePath: await chromium.executablePath(),
-      headless: chromium.headless,
-    });
-  } else {
-    browser = await puppeteer.launch();
-  }
+  const browser = await puppeteer.launch({
+    args: chromium.args,
+    defaultViewport: chromium.defaultViewport,
+    executablePath: await chromium.executablePath(),
+    headless: chromium.headless,
+  });
 
   const page = await browser.newPage();
 
