@@ -6,14 +6,10 @@ import { scrapeTikTokProfile } from "@/utils/getProfilePhoto";
 import { GridFSBucket, MongoClient } from "mongodb";
 import { Readable } from "stream";
 
-interface FormDataWithFile extends FormData {
-  [key: string]: string | File | undefined;
-}
-
 export async function POST(req: NextRequest) {
   try {
     await connectToDatabase();
-    const formData = await req.formData() as FormDataWithFile;
+    const formData = await req.formData();
     const data: Record<string, any> = {};
 
     for (const [key, value] of formData.entries()) {
