@@ -1,4 +1,6 @@
 import * as Yup from "yup";
+const FILE_SIZE = 2 * 1024 * 1024; // Tamanho máximo 5MB
+const SUPPORTED_FORMATS = ["image/jpg", "image/jpeg", "image/gif", "image/png"];
 
 const memberSchema = Yup.object().shape({
   email: Yup.string().email("Email inválido").required("Email é obrigatório"),
@@ -21,6 +23,28 @@ const memberSchema = Yup.object().shape({
     .required("Uso do TikTok é obrigatório"),
   belongedToOtherFamily: Yup.boolean(),
   isStreamedAndAgened: Yup.boolean(),
+  profileImage: Yup.mixed()
+    .required("Você precisa selecionar pelo menos um arquivo")
+    .test(
+      "is-fileList",
+      "Você precisa enviar pelo menos um arquivo",
+      (value: any) => {
+        return value && value.length > 0;
+      }
+    )
+    .test("fileSize", "O arquivo é muito grande. O tamanho máximo é 2MB", (value: any) => {
+      return (
+        value && Array.from(value).every((file: any) => file.size <= FILE_SIZE)
+      );
+    })
+    .test("fileFormat", "Formato não suportado", (value: any) => {
+      return (
+        value &&
+        Array.from(value).every((file: any) =>
+          SUPPORTED_FORMATS.includes(file.type)
+        )
+      );
+    }),
 });
 
 export default memberSchema;

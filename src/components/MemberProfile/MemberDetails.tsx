@@ -48,7 +48,7 @@ const MemberDetails: React.FC<MemberDetailsProps> = ({ member }) => {
         <Avatar
           size="2xl"
           name={member.tiktokUsername}
-          src={member.tiktokProfilePicture}
+          src={`/api/members/image/${member.profileImageId}`}
           mb={4}
         />
         <Text fontSize="2xl" fontWeight="bold" color="turquoise.300" mb={2}>

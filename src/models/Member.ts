@@ -19,6 +19,8 @@ export interface IMember extends Document {
   coins: number; // Nova propriedade
   isJailed: boolean; // Nova propriedade
   updateMemberClass: () => void;
+  profileImageId?: string;
+  profileImage: any;
 }
 
 const MemberSchema: Schema = new Schema({
@@ -54,6 +56,7 @@ const MemberSchema: Schema = new Schema({
   brasaoReceivedDate: { type: Date, optional: true }, // Nova propriedade opcional
   coins: { type: Number, default: 0 }, // Nova propriedade
   isJailed: { type: Boolean, default: false }, // Nova propriedade
+  profileImageId: { type: String },
 });
 
 // Garantir que os campos criptografados sejam descriptografados ao recuperar

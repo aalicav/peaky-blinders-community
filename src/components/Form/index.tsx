@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import {
   ButtonGroup,
   Button,
@@ -34,6 +34,7 @@ import { motion } from "framer-motion";
 import yup from "yup";
 import memberSchema from "@/schemas/memberSchema";
 import { IMember } from "@/models/Member";
+import { FaUpload } from "react-icons/fa";
 
 // Defina o esquema de validação com Yup
 const inputFocusLight = {
@@ -147,6 +148,14 @@ const Form2 = ({
   errors: FieldErrors<IMember>;
   control: Control<FormValues>;
 }) => {
+  const [fileName, setFileName] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    setFileName(file ? file.name : null);
+  };
+
   return (
     <Flex direction="column" color="turquoise.400">
       <FormControl isInvalid={!!errors.tiktokProfile}>
@@ -177,8 +186,8 @@ const Form2 = ({
                 <Radio value="Trabalho" colorScheme="turquoise">
                   Trabalho
                 </Radio>
-                <Radio value="Entretenimento" colorScheme="turquoise">
-                  Entretenimento
+                <Radio value="Entreternimento" colorScheme="turquoise">
+                  Entreternimento
                 </Radio>
               </Stack>
             </RadioGroup>
@@ -186,6 +195,48 @@ const Form2 = ({
         />
         <FormHelperText color="red.500">
           {errors.tiktokUsage?.message}
+        </FormHelperText>
+      </FormControl>
+
+      <FormControl mt="2%" isInvalid={!!errors.profileImage}>
+        <FormLabel htmlFor="profileImage" fontWeight={"normal"}>
+          Imagem de Perfil
+        </FormLabel>
+        <Controller
+          control={control}
+          name="profileImage"
+          render={({ field: { onChange, value } }) => (
+            <>
+              <Input
+                id="profileImage"
+                type="file"
+                accept="image/*"
+                onChange={(e) => {
+                  onChange(e.target.files);
+                  handleFileChange(e);
+                }}
+                ref={fileInputRef}
+                style={{ display: "none" }}
+              />
+              <Button
+                leftIcon={<FaUpload />}
+                onClick={() => fileInputRef.current?.click()}
+                colorScheme="turquoise"
+                variant="outline"
+                _hover={{ bg: "turquoise.100", color: "turquoise.700" }}
+              >
+                Escolher arquivo
+              </Button>
+            </>
+          )}
+        />
+        {fileName && (
+          <Text mt={2} fontSize="sm" color="turquoise.300">
+            Arquivo selecionado: {fileName}
+          </Text>
+        )}
+        <FormHelperText color="red.500">
+          {errors.profileImage?.message?.toString()}
         </FormHelperText>
       </FormControl>
     </Flex>
@@ -301,7 +352,20 @@ export default function Multistep() {
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     try {
-      const response = await axios.post("/api/members", data);
+      const formData = new FormData();
+      (Object.keys(data) as Array<keyof FormValues>).forEach((key) => {
+        if (key === "profileImage" && data[key] instanceof FileList) {
+          formData.append(key, data[key][0]);
+        } else if (data[key] !== undefined) {
+          formData.append(key, String(data[key]));
+        }
+      });
+
+      const response = await axios.post("/api/members", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
       if (response.status === 400) {
         throw new Error(response.data?.error);
       }
@@ -314,10 +378,13 @@ export default function Multistep() {
         isClosable: true,
       });
     } catch (error: any) {
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Ocorreu um erro. Por favor, tente novamente.";
       toast({
         title: "Erro ao enviar formulário.",
-        description:
-          error?.message ?? "Ocorreu um erro. Por favor, tente novamente.",
+        description: errorMessage,
         status: "error",
         duration: 5000,
         isClosable: true,
@@ -328,7 +395,7 @@ export default function Multistep() {
   const handleNext = async () => {
     const fields: any[] = [
       ["email", "birthDate", "whatsapp", "password"],
-      ["tiktokProfile", "tiktokUsage"],
+      ["tiktokProfile", "tiktokUsage", "profileImage"],
       ["belongedToOtherFamily", "isStreamedAndAgened", "brasaoReceivedDate"],
     ];
 
