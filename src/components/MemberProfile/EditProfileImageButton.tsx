@@ -1,7 +1,21 @@
 import React, { useState } from 'react';
 import { Button, useToast } from '@chakra-ui/react';
 import { EditIcon } from '@chakra-ui/icons';
+import * as Yup from 'yup';
 
+const FILE_SIZE = 2 * 1024 * 1024; // Tamanho máximo 2MB
+const SUPPORTED_FORMATS = ["image/jpg", "image/jpeg", "image/gif", "image/png"];
+
+const imageSchema = Yup.object().shape({
+  profileImage: Yup.mixed()
+    .required("Você precisa selecionar uma imagem")
+    .test("fileSize", "O arquivo é muito grande. O tamanho máximo é 2MB", 
+      (value: any) => value && value.size <= FILE_SIZE
+    )
+    .test("fileFormat", "Formato não suportado", 
+      (value: any) => value && SUPPORTED_FORMATS.includes(value.type)
+    ),
+});
 interface EditProfileImageButtonProps {
   memberId: string;
   onImageUpdate: (newImageId: string) => void;
@@ -14,6 +28,23 @@ const EditProfileImageButton: React.FC<EditProfileImageButtonProps> = ({ memberI
   const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
+
+    try {
+      await imageSchema.validate({ profileImage: file }, { abortEarly: false });
+    } catch (error) {
+      if (error instanceof Yup.ValidationError) {
+        error.errors.forEach((err) => {
+          toast({
+            title: "Erro de validação",
+            description: err,
+            status: "error",
+            duration: 3000,
+            isClosable: true,
+          });
+        });
+        return;
+      }
+    }
 
     setIsLoading(true);
 

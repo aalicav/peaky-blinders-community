@@ -3,7 +3,7 @@ const FILE_SIZE = 2 * 1024 * 1024; // Tamanho máximo 5MB
 const SUPPORTED_FORMATS = ["image/jpg", "image/jpeg", "image/gif", "image/png"];
 
 const memberSchema = Yup.object().shape({
-  personalName: Yup.string().required('Nome pessoal é obrigatório').min(55, 'O nome deve ter pelo menos 55 caracteres'),
+  personalName: Yup.string().required('Nome pessoal é obrigatório').max(55, 'O nome não deve ter mais de 55 caracteres'),
   email: Yup.string().email("Email inválido").required("Email é obrigatório"),
   password: Yup.string()
     .min(8, "A senha deve ter pelo menos 8 caracteres")

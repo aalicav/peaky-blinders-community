@@ -15,6 +15,8 @@ import {
   Stack,
   Text,
   Box,
+  InputGroup,
+  InputRightElement,
 } from "@chakra-ui/react";
 import { useToast } from "@chakra-ui/react";
 import {
@@ -24,12 +26,13 @@ import {
   SubmitHandler,
   useForm,
   UseFormRegister,
+  UseFormGetValues,
 } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { PhoneInput } from "react-international-phone";
 import "react-international-phone/style.css";
 import axios from "axios";
-import { CheckCircleIcon } from "@chakra-ui/icons";
+import { CheckCircleIcon, ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import { motion } from "framer-motion";
 import yup from "yup";
 import memberSchema from "@/schemas/memberSchema";
@@ -47,11 +50,37 @@ const Form1 = ({
   register,
   errors,
   control,
+  getValues,
 }: {
   register: UseFormRegister<FormValues>;
   errors: FieldErrors<IMember>;
   control: Control<FormValues>;
+  getValues: UseFormGetValues<FormValues>;
 }) => {
+  const [showPassword, setShowPassword] = useState(false);
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [confirmPasswordError, setConfirmPasswordError] = useState("");
+  const toast = useToast();
+
+  const handleTogglePassword = () => setShowPassword(!showPassword);
+
+  const validateConfirmPassword = () => {
+    const password = getValues("password");
+    if (password !== confirmPassword) {
+      setConfirmPasswordError("As senhas não coincidem");
+      toast({
+        title: "Erro de validação",
+        description: "As senhas não coincidem",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+      return false;
+    }
+    setConfirmPasswordError("");
+    return true;
+  };
+
   return (
     <Flex color="turquoise.300" flexDirection="column" gap="20px">
       <FormControl isInvalid={!!errors.personalName}>
@@ -65,7 +94,9 @@ const Form1 = ({
           _focus={inputFocusLight}
           {...register("personalName")}
         />
-        <FormHelperText color="red.500">{errors.personalName?.message}</FormHelperText>
+        <FormHelperText color="red.500">
+          {errors.personalName?.message}
+        </FormHelperText>
       </FormControl>
 
       <FormControl isInvalid={!!errors.email}>
@@ -86,16 +117,46 @@ const Form1 = ({
         <FormLabel htmlFor="password" fontWeight={"normal"}>
           Senha
         </FormLabel>
-        <Input
-          id="password"
-          type="password"
-          placeholder="Digite sua senha"
-          _focus={inputFocusLight}
-          {...register("password")}
-        />
+        <InputGroup>
+          <Input
+            id="password"
+            type={showPassword ? "text" : "password"}
+            placeholder="Digite sua senha"
+            _focus={inputFocusLight}
+            {...register("password")}
+          />
+          <InputRightElement width="4.5rem">
+            <Button h="1.75rem" size="sm" onClick={handleTogglePassword}>
+              {showPassword ? <ViewOffIcon /> : <ViewIcon />}
+            </Button>
+          </InputRightElement>
+        </InputGroup>
         <FormHelperText color="red.500">
           {errors.password?.message}
         </FormHelperText>
+      </FormControl>
+
+      <FormControl isInvalid={!!confirmPasswordError}>
+        <FormLabel htmlFor="confirmPassword" fontWeight={"normal"}>
+          Confirmar Senha
+        </FormLabel>
+        <InputGroup>
+          <Input
+            id="confirmPassword"
+            type={showPassword ? "text" : "password"}
+            placeholder="Confirme sua senha"
+            _focus={inputFocusLight}
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            onBlur={validateConfirmPassword}
+          />
+          <InputRightElement width="4.5rem">
+            <Button h="1.75rem" size="sm" onClick={handleTogglePassword}>
+              {showPassword ? <ViewOffIcon /> : <ViewIcon />}
+            </Button>
+          </InputRightElement>
+        </InputGroup>
+        <FormHelperText color="red.500">{confirmPasswordError}</FormHelperText>
       </FormControl>
 
       <Flex
@@ -342,6 +403,44 @@ const Form3 = ({
   );
 };
 
+const Form4 = () => {
+  return (
+    <Flex direction="column" color="turquoise.400" gap={4}>
+      <Text fontSize="lg" fontWeight="bold">
+        Grupos da Família
+      </Text>
+      <Text>
+        É importante entrar nos dois grupos abaixo. Clique nos botões para
+        acessar os links.
+      </Text>
+      <Button
+        as="a"
+        href="https://chat.whatsapp.com/CIqnvDtwxf6AdX1ac8XcSb"
+        target="_blank"
+        rel="noopener noreferrer"
+        colorScheme="whatsapp"
+      >
+        Grupo de RECADOS IMPORTANTES
+      </Button>
+      <Text fontSize="sm">
+        Este grupo é apenas para recados importantes, não há conversas gerais.
+      </Text>
+      <Button
+        as="a"
+        href="https://chat.whatsapp.com/JDbFMZWsrSy48jb5JxoyBr"
+        target="_blank"
+        rel="noopener noreferrer"
+        colorScheme="whatsapp"
+      >
+        Grupo Geral WhatsApp
+      </Button>
+      <Text fontSize="sm">
+        Este é o grupo geral para conversas e interações.
+      </Text>
+    </Flex>
+  );
+};
+
 type FormValues = yup.InferType<typeof memberSchema>;
 
 export default function Multistep() {
@@ -351,6 +450,7 @@ export default function Multistep() {
     trigger,
     control,
     formState: { errors },
+    getValues,
   } = useForm<FormValues>({
     resolver: yupResolver(memberSchema),
   });
@@ -362,6 +462,7 @@ export default function Multistep() {
     { title: "Informações Pessoais", description: "E-mail e contato" },
     { title: "Perfil TikTok", description: "Seu perfil na plataforma" },
     { title: "Informações Adicionais", description: "Detalhes finais" },
+    { title: "Grupos da Família", description: "Links importantes" },
   ];
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
@@ -498,7 +599,12 @@ export default function Multistep() {
               ))}
             </Flex>
             {activeStep === 0 && (
-              <Form1 register={register} errors={errors} control={control} />
+              <Form1
+                register={register}
+                errors={errors}
+                control={control}
+                getValues={getValues}
+              />
             )}
             {activeStep === 1 && (
               <Form2 register={register} errors={errors} control={control} />
@@ -506,6 +612,7 @@ export default function Multistep() {
             {activeStep === 2 && (
               <Form3 register={register} errors={errors} control={control} />
             )}
+            {activeStep === 3 && <Form4 />}
             <ButtonGroup mt="5%" w="100%">
               <Flex w="100%" justifyContent="space-between">
                 <Flex>
