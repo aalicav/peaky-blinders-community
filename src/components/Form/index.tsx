@@ -54,6 +54,20 @@ const Form1 = ({
 }) => {
   return (
     <Flex color="turquoise.300" flexDirection="column" gap="20px">
+      <FormControl isInvalid={!!errors.personalName}>
+        <FormLabel htmlFor="personalName" fontWeight={"normal"}>
+          Nome Pessoal
+        </FormLabel>
+        <Input
+          id="personalName"
+          type="text"
+          placeholder="Digite seu nome completo"
+          _focus={inputFocusLight}
+          {...register("personalName")}
+        />
+        <FormHelperText color="red.500">{errors.personalName?.message}</FormHelperText>
+      </FormControl>
+
       <FormControl isInvalid={!!errors.email}>
         <FormLabel htmlFor="email" fontWeight={"normal"}>
           Coloque seu E-mail
@@ -394,7 +408,7 @@ export default function Multistep() {
 
   const handleNext = async () => {
     const fields: any[] = [
-      ["email", "birthDate", "whatsapp", "password"],
+      ["email", "birthDate", "whatsapp", "password", "personalName"],
       ["tiktokProfile", "tiktokUsage", "profileImage"],
       ["belongedToOtherFamily", "isStreamedAndAgened", "brasaoReceivedDate"],
     ];

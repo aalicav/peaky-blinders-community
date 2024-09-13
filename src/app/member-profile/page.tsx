@@ -16,6 +16,7 @@ import { useRouter } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
 import { IMember } from "@/models/Member";
+import _ from "lodash";
 
 const MotionBox = motion(Box as any);
 
@@ -28,6 +29,15 @@ const MemberProfilePage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const toast = useToast();
   const router = useRouter();
+
+  const handleMemberUpdate = (updatedMember: Partial<IMember>) => {
+    const memberToSave = _(member).mapValues((value, key) =>
+      updatedMember[key as keyof IMember]
+        ? updatedMember[key as keyof IMember]
+        : value
+    ).value();
+    setMember(memberToSave);
+  };
 
   useEffect(() => {
     const fetchMemberData = async () => {
@@ -106,11 +116,12 @@ const MemberProfilePage = () => {
             </Heading>
           </MotionBox>
 
-          <MemberDetails member={member} />
+          <MemberDetails member={member} onMemberUpdate={handleMemberUpdate} />
           <MemberStats
             liveParticipations={member.liveParticipations.length}
             coins={member.coins}
             memberSince={member.createdAt}
+            brasaoReceivedDate={member.brasaoReceivedDate}
           />
         </VStack>
       </Container>

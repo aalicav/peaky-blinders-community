@@ -5,6 +5,7 @@ import { authMiddleware } from "@/middleware/authMiddleware";
 import { scrapeTikTokProfile } from "@/utils/getProfilePhoto";
 import { GridFSBucket, MongoClient } from "mongodb";
 import { Readable } from "stream";
+import { File } from "buffer";
 
 export async function POST(req: NextRequest) {
   try {
@@ -29,17 +30,20 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Buscar informações do TikTok
-    if (typeof data.tiktokProfile === 'string') {
-      try {
-        const userPhoto = await scrapeTikTokProfile(data.tiktokProfile);
-        data.tiktokUsername = data.tiktokProfile.split("@")[1];
-        if (userPhoto) {
-          data.tiktokProfilePicture = userPhoto;
-        }
-      } catch (error) {
-        console.error("Erro ao buscar informações do TikTok:", error);
-      }
+    // Validar o comprimento do nome pessoal
+    if (!data.personalName || data.personalName.length < 55) {
+      return NextResponse.json(
+        { error: "O nome pessoal deve ter pelo menos 55 caracteres" },
+        { status: 400 }
+      );
+    }
+
+    // Validar o comprimento da URL do perfil do TikTok
+    if (data.tiktokProfile && data.tiktokProfile.length > 250) {
+      return NextResponse.json(
+        { error: "A URL do perfil do TikTok deve ter no máximo 250 caracteres" },
+        { status: 400 }
+      );
     }
 
     // Definir valores padrão para coins e isJailed

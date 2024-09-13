@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Box,
   Flex,
@@ -10,14 +10,19 @@ import {
 } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import { IMember } from "@/models/Member";
+import DownloadOverlayImageButton from '../DownloadOverlayImageButton';
+import EditProfileImageButton from './EditProfileImageButton';
 
 const MotionBox = motion(Box as any);
 
 interface MemberDetailsProps {
   member: IMember;
+  onMemberUpdate: (updatedMember: Partial<IMember>) => void;
 }
 
-const MemberDetails: React.FC<MemberDetailsProps> = ({ member }) => {
+const MemberDetails: React.FC<MemberDetailsProps> = ({ member, onMemberUpdate }) => {
+  const [profileImageId, setProfileImageId] = useState(member.profileImageId);
+
   const getBadgeColor = (memberClass: string) => {
     switch (memberClass.toLowerCase()) {
       case "beginner":
@@ -29,6 +34,19 @@ const MemberDetails: React.FC<MemberDetailsProps> = ({ member }) => {
       default:
         return "gray";
     }
+  };
+
+  const handleImageUpdate = (newImageId: string) => {
+    setProfileImageId(newImageId);
+    onMemberUpdate({ profileImageId: newImageId });
+  };
+
+  const getDaysInFamily = () => {
+    const joinDate = new Date(member.createdAt);
+    const today = new Date();
+    const diffTime = Math.abs(today.getTime() - joinDate.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays;
   };
 
   return (
@@ -48,11 +66,15 @@ const MemberDetails: React.FC<MemberDetailsProps> = ({ member }) => {
         <Avatar
           size="2xl"
           name={member.tiktokUsername}
-          src={`/api/members/image/${member.profileImageId}`}
+          src={`/api/members/image/${profileImageId}`}
           mb={4}
         />
+        <EditProfileImageButton memberId={member._id.toString()} onImageUpdate={handleImageUpdate} />
         <Text fontSize="2xl" fontWeight="bold" color="turquoise.300" mb={2}>
           {member.tiktokUsername}
+        </Text>
+        <Text fontSize="lg" color="gray.400" mb={2}>
+          {member.personalName.toUpperCase()}
         </Text>
         <Badge
           colorScheme={getBadgeColor(member.memberClass)}
@@ -82,6 +104,14 @@ const MemberDetails: React.FC<MemberDetailsProps> = ({ member }) => {
               {member.coins}
             </Text>
           </HStack>
+          <HStack>
+            <Text fontWeight="bold" color="gray.400">
+              Dias na família:
+            </Text>
+            <Text color="turquoise.300" fontWeight="bold">
+              {getDaysInFamily()}
+            </Text>
+          </HStack>
           <Text fontWeight="bold" color="gray.400">
             Participações em Lives:
           </Text>
@@ -95,6 +125,11 @@ const MemberDetails: React.FC<MemberDetailsProps> = ({ member }) => {
             </Badge>
           </HStack>
         </VStack>
+        <DownloadOverlayImageButton
+          memberName={member.tiktokUsername}
+          memberClass={member.memberClass}
+          profileImageId={member.profileImageId ?? ''}
+        />
       </Flex>
     </MotionBox>
   );

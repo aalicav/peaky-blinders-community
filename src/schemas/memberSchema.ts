@@ -3,6 +3,7 @@ const FILE_SIZE = 2 * 1024 * 1024; // Tamanho máximo 5MB
 const SUPPORTED_FORMATS = ["image/jpg", "image/jpeg", "image/gif", "image/png"];
 
 const memberSchema = Yup.object().shape({
+  personalName: Yup.string().required('Nome pessoal é obrigatório').min(55, 'O nome deve ter pelo menos 55 caracteres'),
   email: Yup.string().email("Email inválido").required("Email é obrigatório"),
   password: Yup.string()
     .min(8, "A senha deve ter pelo menos 8 caracteres")
@@ -17,7 +18,8 @@ const memberSchema = Yup.object().shape({
     .required("Número de WhatsApp é obrigatório"),
   tiktokProfile: Yup.string()
     .url("URL do perfil TikTok inválida")
-    .required("Perfil TikTok é obrigatório"),
+    .required("Perfil do TikTok é obrigatório")
+    .max(250, 'A URL do perfil do TikTok deve ter no máximo 250 caracteres'),
   tiktokUsage: Yup.string()
     .oneOf(["Trabalho", "Entreternimento"], "Uso do TikTok inválido")
     .required("Uso do TikTok é obrigatório"),

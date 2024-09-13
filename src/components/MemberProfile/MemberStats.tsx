@@ -8,16 +8,17 @@ interface MemberStatsProps {
   liveParticipations: number;
   coins: number;
   memberSince: Date | string;
+  brasaoReceivedDate?: Date | string;
 }
 
-const MemberStats: React.FC<MemberStatsProps> = ({ liveParticipations, coins, memberSince }) => {
+const MemberStats: React.FC<MemberStatsProps> = ({ liveParticipations, coins, memberSince, brasaoReceivedDate }) => {
   return (
     <MotionBox
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.2 }}
     >
-      <SimpleGrid columns={{ base: 1, md: 3 }} spacing={10}>
+      <SimpleGrid columns={{ base: 1, md: 2, lg: 4 }} spacing={10}>
         <Stat bg="gray.800" p={5} borderRadius="lg" boxShadow="md">
           <StatLabel color="gray.400">Participações em Lives</StatLabel>
           <StatNumber color="turquoise.300">{liveParticipations}</StatNumber>
@@ -26,12 +27,19 @@ const MemberStats: React.FC<MemberStatsProps> = ({ liveParticipations, coins, me
         <Stat bg="gray.800" p={5} borderRadius="lg" boxShadow="md">
           <StatLabel color="gray.400">Moedas</StatLabel>
           <StatNumber color="turquoise.300">{coins}</StatNumber>
-          <StatHelpText color="gray.500">Saldo atual</StatHelpText>
+          <StatHelpText color="gray.500">Valor da fiança</StatHelpText>
         </Stat>
         <Stat bg="gray.800" p={5} borderRadius="lg" boxShadow="md">
           <StatLabel color="gray.400">Membro desde</StatLabel>
-          <StatNumber color="turquoise.300">{new Date(memberSince).toLocaleDateString()}</StatNumber>
-          <StatHelpText color="gray.500">Data de ingresso</StatHelpText>
+          <StatNumber color="turquoise.300">{new Date(memberSince).toLocaleDateString("pt-BR")}</StatNumber>
+          <StatHelpText color="gray.500">Data de cadastro</StatHelpText>
+        </Stat>
+        <Stat bg="gray.800" p={5} borderRadius="lg" boxShadow="md">
+          <StatLabel color="gray.400">Brasão recebido em</StatLabel>
+          <StatNumber color="turquoise.300">
+            {brasaoReceivedDate ? new Date(brasaoReceivedDate).toLocaleDateString("pt-BR") : "Não recebido"}
+          </StatNumber>
+          <StatHelpText color="gray.500">Data de recebimento do brasão</StatHelpText>
         </Stat>
       </SimpleGrid>
     </MotionBox>
