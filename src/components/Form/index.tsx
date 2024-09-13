@@ -419,7 +419,7 @@ const Form4 = () => {
           href="https://chat.whatsapp.com/JDbFMZWsrSy48jb5JxoyBr"
           target="_blank"
         ></Link>
-        Grupo de RECADOS IMPORTANTES
+        Grupo de RECADOS
       </Button>
       <Text fontSize="sm">
         Este grupo é apenas para recados importantes, não há conversas gerais.
@@ -429,7 +429,7 @@ const Form4 = () => {
           target="_blank"
           href="https://chat.whatsapp.com/CIqnvDtwxf6AdX1ac8XcSb"
         >
-          Grupo Geral WhatsApp
+          Grupo GERAL
         </Link>
       </Button>
       <Text fontSize="sm">
