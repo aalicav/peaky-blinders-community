@@ -17,6 +17,7 @@ import {
   Box,
   InputGroup,
   InputRightElement,
+  Link,
 } from "@chakra-ui/react";
 import { useToast } from "@chakra-ui/react";
 import {
@@ -413,26 +414,23 @@ const Form4 = () => {
         É importante entrar nos dois grupos abaixo. Clique nos botões para
         acessar os links.
       </Text>
-      <Button
-        as="a"
-        href="https://chat.whatsapp.com/CIqnvDtwxf6AdX1ac8XcSb"
-        target="_blank"
-        rel="noopener noreferrer"
-        colorScheme="whatsapp"
-      >
+      <Button rel="noopener noreferrer" colorScheme="whatsapp">
+        <Link
+          href="https://chat.whatsapp.com/JDbFMZWsrSy48jb5JxoyBr"
+          target="_blank"
+        ></Link>
         Grupo de RECADOS IMPORTANTES
       </Button>
       <Text fontSize="sm">
         Este grupo é apenas para recados importantes, não há conversas gerais.
       </Text>
-      <Button
-        as="a"
-        href="https://chat.whatsapp.com/JDbFMZWsrSy48jb5JxoyBr"
-        target="_blank"
-        rel="noopener noreferrer"
-        colorScheme="whatsapp"
-      >
-        Grupo Geral WhatsApp
+      <Button rel="noopener noreferrer" colorScheme="whatsapp">
+        <Link
+          target="_blank"
+          href="https://chat.whatsapp.com/CIqnvDtwxf6AdX1ac8XcSb"
+        >
+          Grupo Geral WhatsApp
+        </Link>
       </Button>
       <Text fontSize="sm">
         Este é o grupo geral para conversas e interações.
@@ -627,16 +625,18 @@ export default function Multistep() {
                   >
                     Voltar
                   </Button>
-                  <Button
-                    w="7rem"
-                    isDisabled={activeStep === steps.length - 1}
-                    onClick={handleNext}
-                    colorScheme="teal"
-                    variant="outline"
-                    _hover={{ bg: "teal.100", color: "teal.700" }}
-                  >
-                    Próximo
-                  </Button>
+                  {activeStep !== steps.length - 1 && (
+                    <Button
+                      w="7rem"
+                      isDisabled={activeStep === steps.length - 1}
+                      onClick={handleNext}
+                      colorScheme="teal"
+                      variant="outline"
+                      _hover={{ bg: "teal.100", color: "teal.700" }}
+                    >
+                      Próximo
+                    </Button>
+                  )}
                 </Flex>
                 {activeStep === steps.length - 1 && (
                   <Button
