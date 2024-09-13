@@ -74,7 +74,7 @@ const MemberDetails: React.FC<MemberDetailsProps> = ({ member, onMemberUpdate })
           {member.tiktokUsername}
         </Text>
         <Text fontSize="lg" color="gray.400" mb={2}>
-          {member.personalName.toUpperCase()}
+          {member.personalName?.toUpperCase()}
         </Text>
         <Badge
           colorScheme={getBadgeColor(member.memberClass)}
