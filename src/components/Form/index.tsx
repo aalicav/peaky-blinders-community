@@ -418,8 +418,9 @@ const Form4 = () => {
         <Link
           href="https://chat.whatsapp.com/JDbFMZWsrSy48jb5JxoyBr"
           target="_blank"
-        ></Link>
-        Grupo de RECADOS
+        >
+          Grupo de RECADOS
+        </Link>
       </Button>
       <Text fontSize="sm">
         Este grupo é apenas para recados importantes, não há conversas gerais.

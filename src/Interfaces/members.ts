@@ -44,8 +44,8 @@ export type GetMembersResponse = {
 };
 
 export enum TiktokUsage {
-  Personal = "PERSONAL",
-  Profissional = "PROFISSIONAL",
+  Entreternimento = "Entreternimento",
+  Profissional = "Entreternimento",
 }
 
 // Função para calcular a classe do membro com base na data de inscrição
