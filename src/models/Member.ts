@@ -77,7 +77,7 @@ MemberSchema.set("toJSON", {
 // Função para atualizar a classe do membro
 MemberSchema.methods.updateMemberClass = function () {
   const daysSinceJoining =
-    (Date.now() - this.createdAt.getTime()) / (1000 * 3600 * 24);
+    (Date.now() - this.brasaoReceivedDate.getTime()) / (1000 * 3600 * 24);
   if (daysSinceJoining <= 90) {
     this.memberClass = "Beginner";
   } else if (daysSinceJoining <= 365) {
