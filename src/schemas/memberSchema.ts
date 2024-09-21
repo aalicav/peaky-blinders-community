@@ -19,7 +19,7 @@ const memberSchema = Yup.object().shape({
   tiktokProfile: Yup.string()
     .url("URL do perfil TikTok inválida")
     .required("Perfil do TikTok é obrigatório")
-    .max(250, 'A URL do perfil do TikTok deve ter no máximo 250 caracteres'),
+    .max(900, 'A URL do perfil do TikTok deve ter no máximo 900 caracteres'),
   tiktokUsage: Yup.string()
     .oneOf(["Trabalho", "Entreternimento"], "Uso do TikTok inválido")
     .required("Uso do TikTok é obrigatório"),

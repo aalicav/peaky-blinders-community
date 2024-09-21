@@ -46,7 +46,7 @@ const MemberSchema: Schema = new Schema({
     set: (v: string) => encrypt(v),
     get: (v: string) => decrypt(v),
   },
-  tiktokProfile: { type: String, required: true, maxlength: 250 }, // Atualizado para máximo de 250 caracteres
+  tiktokProfile: { type: String, required: true, maxlength: 900 }, // Atualizado para máximo de 900 caracteres
   tiktokUsage: { type: String, required: true },
   belongedToOtherFamily: { type: Boolean, required: true },
   isStreamedAndAgened: { type: Boolean, required: true },
