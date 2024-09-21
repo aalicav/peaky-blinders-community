@@ -31,9 +31,9 @@ export async function POST(req: NextRequest) {
     }
 
     // Validar o comprimento do nome pessoal
-    if (!data.personalName || data.personalName.length < 55) {
+    if (!data.personalName || data.personalName.length > 55) {
       return NextResponse.json(
-        { error: "O nome pessoal deve ter pelo menos 55 caracteres" },
+        { error: "O nome pessoal não deve ter mais de 55 caracteres" },
         { status: 400 }
       );
     }
