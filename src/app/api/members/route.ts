@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import Member from "@/models/Member";
 import connectToDatabase from "@/db/mongo";
 import { authMiddleware } from "@/middleware/authMiddleware";
-import { scrapeTikTokProfile } from "@/utils/getProfilePhoto";
 import { GridFSBucket, MongoClient } from "mongodb";
 import { Readable } from "stream";
 import { File } from "buffer";
@@ -85,7 +84,7 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     console.error("Erro ao criar membro:", error);
     return NextResponse.json(
-      { error: "Erro ao criar membro" },
+      { error: "Erro desconhecido ao criar membro" },
       { status: 500 }
     );
   }

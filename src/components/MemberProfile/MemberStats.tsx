@@ -30,11 +30,6 @@ const MemberStats: React.FC<MemberStatsProps> = ({ liveParticipations, coins, me
           <StatHelpText color="gray.500">Valor da fiança</StatHelpText>
         </Stat>
         <Stat bg="gray.800" p={5} borderRadius="lg" boxShadow="md">
-          <StatLabel color="gray.400">Membro desde</StatLabel>
-          <StatNumber color="turquoise.300">{new Date(memberSince).toLocaleDateString("pt-BR")}</StatNumber>
-          <StatHelpText color="gray.500">Data de cadastro</StatHelpText>
-        </Stat>
-        <Stat bg="gray.800" p={5} borderRadius="lg" boxShadow="md">
           <StatLabel color="gray.400">Brasão recebido em</StatLabel>
           <StatNumber color="turquoise.300">
             {brasaoReceivedDate ? new Date(brasaoReceivedDate).toLocaleDateString("pt-BR") : "Não recebido"}

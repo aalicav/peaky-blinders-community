@@ -62,7 +62,7 @@ const MemberSchema: Schema = new Schema({
   coins: { type: Number, default: 0 }, // Nova propriedade
   isJailed: { type: Boolean, default: false }, // Nova propriedade
   profileImageId: { type: String },
-  personalName: { type: String, required: true, minlength: 55 }, // Novo campo
+  personalName: { type: String, required: true, maxlength: 55 }, // Novo campo
 });
 
 // Garantir que os campos criptografados sejam descriptografados ao recuperar

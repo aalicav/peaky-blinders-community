@@ -42,7 +42,7 @@ const MemberDetails: React.FC<MemberDetailsProps> = ({ member, onMemberUpdate })
   };
 
   const getDaysInFamily = () => {
-    const joinDate = new Date(member.createdAt);
+    const joinDate = new Date(member.brasaoReceivedDate ?? member.createdAt);
     const today = new Date();
     const diffTime = Math.abs(today.getTime() - joinDate.getTime());
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
