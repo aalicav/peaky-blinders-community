@@ -37,14 +37,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Validar o comprimento da URL do perfil do TikTok
-    if (data.tiktokProfile && data.tiktokProfile.length > 250) {
-      return NextResponse.json(
-        { error: "A URL do perfil do TikTok deve ter no máximo 250 caracteres" },
-        { status: 400 }
-      );
-    }
-
     // Definir valores padrão para coins e isJailed
     data.coins = 0;
     data.isJailed = false;

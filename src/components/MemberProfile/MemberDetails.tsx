@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   Box,
   Flex,
@@ -10,8 +10,9 @@ import {
 } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import { IMember } from "@/models/Member";
-import DownloadOverlayImageButton from '../DownloadOverlayImageButton';
-import EditProfileImageButton from './EditProfileImageButton';
+import DownloadOverlayImageButton from "../DownloadOverlayImageButton";
+import EditProfileImageButton from "./EditProfileImageButton";
+import { getClassImage } from "@/utils/classUtils";
 
 const MotionBox = motion(Box as any);
 
@@ -20,7 +21,10 @@ interface MemberDetailsProps {
   onMemberUpdate: (updatedMember: Partial<IMember>) => void;
 }
 
-const MemberDetails: React.FC<MemberDetailsProps> = ({ member, onMemberUpdate }) => {
+const MemberDetails: React.FC<MemberDetailsProps> = ({
+  member,
+  onMemberUpdate,
+}) => {
   const [profileImageId, setProfileImageId] = useState(member.profileImageId);
 
   const getBadgeColor = (memberClass: string) => {
@@ -63,13 +67,13 @@ const MemberDetails: React.FC<MemberDetailsProps> = ({ member, onMemberUpdate })
         borderRadius="lg"
         boxShadow="xl"
       >
-        <Avatar
-          size="2xl"
-          name={member.tiktokUsername}
-          src={`/api/members/image/${profileImageId}`}
-          mb={4}
-        />
-        <EditProfileImageButton memberId={member._id.toString()} onImageUpdate={handleImageUpdate} />
+        <DownloadOverlayImageButton
+          memberName={member.tiktokUsername}
+          memberClass={member.memberClass}
+          profileImageId={member.profileImageId ?? ""}
+          memberId={member._id}
+          handleImageUpdate={handleImageUpdate}
+        />{" "}
         <Text fontSize="2xl" fontWeight="bold" color="turquoise.300" mb={2}>
           {member.tiktokUsername}
         </Text>
@@ -125,11 +129,6 @@ const MemberDetails: React.FC<MemberDetailsProps> = ({ member, onMemberUpdate })
             </Badge>
           </HStack>
         </VStack>
-        <DownloadOverlayImageButton
-          memberName={member.tiktokUsername}
-          memberClass={member.memberClass}
-          profileImageId={member.profileImageId ?? ''}
-        />
       </Flex>
     </MotionBox>
   );

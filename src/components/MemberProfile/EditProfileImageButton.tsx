@@ -3,13 +3,13 @@ import { Button, useToast } from '@chakra-ui/react';
 import { EditIcon } from '@chakra-ui/icons';
 import * as Yup from 'yup';
 
-const FILE_SIZE = 2 * 1024 * 1024; // Tamanho máximo 2MB
+const FILE_SIZE = 30 * 1024 * 1024; // Tamanho máximo 2MB
 const SUPPORTED_FORMATS = ["image/jpg", "image/jpeg", "image/gif", "image/png"];
 
 const imageSchema = Yup.object().shape({
   profileImage: Yup.mixed()
     .required("Você precisa selecionar uma imagem")
-    .test("fileSize", "O arquivo é muito grande. O tamanho máximo é 2MB", 
+    .test("fileSize", "O arquivo é muito grande. O tamanho máximo é 30MB", 
       (value: any) => value && value.size <= FILE_SIZE
     )
     .test("fileFormat", "Formato não suportado", 
