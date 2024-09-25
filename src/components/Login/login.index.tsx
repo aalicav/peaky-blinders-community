@@ -132,7 +132,6 @@ export const LoginArea = () => {
               </Button>
             </VStack>
           </form>
-          <Link color="turquoise.300">Esqueceu sua senha?</Link>
         </VStack>
       </Box>
     </Flex>

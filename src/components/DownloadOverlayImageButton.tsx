@@ -44,12 +44,16 @@ const DownloadOverlayImageButton: React.FC<DownloadOverlayImageButtonProps> = ({
               profileImage.width,
               profileImage.height
             );
+
+            const x = profileImage.width - 10; // 10px padding from the right
+            const y = profileImage.height - 10; // 10px padding from the bottom
+
             ctx.drawImage(
               classImage,
               0,
-              0,
-              profileImage.width,
-              profileImage.height
+              -100,
+              classImage.width,
+              classImage.height
             );
           };
 
@@ -88,11 +92,10 @@ const DownloadOverlayImageButton: React.FC<DownloadOverlayImageButtonProps> = ({
     <Flex alignItems="center" gap="10px" direction="column">
       <Avatar as="canvas" ref={canvasRef} size="2xl" />
       <Flex>
-      <EditProfileImageButton
+        <EditProfileImageButton
           memberId={memberId}
           onImageUpdate={handleImageUpdate}
-        />  
-
+        />
       </Flex>
       <Button
         onClick={handleDownload}
