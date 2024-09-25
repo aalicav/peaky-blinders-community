@@ -1,5 +1,5 @@
 import * as Yup from "yup";
-const FILE_SIZE = 2 * 1024 * 1024; // Tamanho máximo 5MB
+const FILE_SIZE = 30 * 1024 * 1024; // Tamanho máximo 5MB
 const SUPPORTED_FORMATS = ["image/jpg", "image/jpeg", "image/gif", "image/png"];
 
 const memberSchema = Yup.object().shape({
@@ -34,7 +34,7 @@ const memberSchema = Yup.object().shape({
         return value && value.length > 0;
       }
     )
-    .test("fileSize", "O arquivo é muito grande. O tamanho máximo é 2MB", (value: any) => {
+    .test("fileSize", "O arquivo é muito grande. O tamanho máximo é 30MB", (value: any) => {
       return (
         value && Array.from(value).every((file: any) => file.size <= FILE_SIZE)
       );
