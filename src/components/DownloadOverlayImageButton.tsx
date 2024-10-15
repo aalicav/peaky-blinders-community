@@ -1,7 +1,6 @@
-import React, { useEffect, useRef, useState, useCallback } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Avatar, Button, Flex } from "@chakra-ui/react";
 import { Stage, Layer, Image as KonvaImage, Transformer } from "react-konva";
-import Cropper from "react-easy-crop";
 import { getClassImage } from "../utils/classUtils";
 import EditProfileImageButton from "./MemberProfile/EditProfileImageButton";
 
@@ -21,19 +20,22 @@ const DownloadOverlayImageButton: React.FC<DownloadOverlayImageButtonProps> = ({
   memberId,
 }) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [isEditMode, setIsEditMode] = useState(false); // State to toggle between view and edit modes
+  const [isEditMode, setIsEditMode] = useState(false);
   const [profileImage, setProfileImage] = useState<HTMLImageElement | null>(null);
   const [classImage, setClassImage] = useState<HTMLImageElement | null>(null);
-  const [imagePosition, setImagePosition] = useState({ x: 50, y: 50 });
-  const [overlayScale, setOverlayScale] = useState({ x: 1, y: 1 });
+  const [profileImagePosition, setProfileImagePosition] = useState({ x: 0, y: 0 });
+  const [classImagePosition, setClassImagePosition] = useState({ x: 0, y: 0 });
+  const [profileImageScale, setProfileImageScale] = useState({ x: 1, y: 1 });
+  const [classImageScale, setClassImageScale] = useState({ x: 1, y: 1 });
   const [isOverlaySelected, setIsOverlaySelected] = useState(false);
+  const [isProfileSelected, setIsProfileSelected] = useState(false);
 
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const stageRef = useRef<any>(null);
-  const overlayRef = useRef<any>(null);
-  const transformerRef = useRef<any>(null);
+  const stageRef = useRef(null);
+  const overlayRef = useRef(null);
+  const profileImageRef = useRef(null); // Ref para o profileImage
+  const profileTransformerRef = useRef<any>(null); // Transformer para profileImage
+  const overlayTransformerRef = useRef<any>(null); // Transformer para classImage
 
-  // Load profile image and class image
   useEffect(() => {
     const loadImages = () => {
       const profileImg = new window.Image();
@@ -50,9 +52,6 @@ const DownloadOverlayImageButton: React.FC<DownloadOverlayImageButtonProps> = ({
         setClassImage(classImg);
       };
 
-      profileImg.onerror = (e) => console.error("Erro ao carregar imagem do perfil:", e);
-      classImg.onerror = (e) => console.error("Erro ao carregar imagem da classe:", e);
-
       profileImg.src = `/api/members/image/${profileImageId}`;
       classImg.src = getClassImage(memberClass);
     };
@@ -60,11 +59,9 @@ const DownloadOverlayImageButton: React.FC<DownloadOverlayImageButtonProps> = ({
     loadImages();
   }, [memberClass, profileImageId]);
 
-  // Function to handle download after editing
   const handleFinalizeAndDownload = async () => {
     setIsLoading(true);
     if (stageRef.current && profileImage) {
-      // Extract the data URL of the edited stage
       const stage = stageRef.current as any;
       const dataURL = stage.toDataURL();
       const link = document.createElement("a");
@@ -73,111 +70,187 @@ const DownloadOverlayImageButton: React.FC<DownloadOverlayImageButtonProps> = ({
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-
-      // Reset edit mode
       setIsEditMode(false);
       setIsLoading(false);
     }
   };
 
-  // Function to start editing mode
-  const handleEdit = () => {
-    setIsEditMode(true);
-  };
-
-  // Use effect to add transformer controls to the overlay image
   useEffect(() => {
-    if (transformerRef.current && overlayRef.current && isOverlaySelected) {
-      transformerRef.current.nodes([overlayRef.current]);
-      transformerRef.current.getLayer().batchDraw();
+    // Aplicar Transformer no profileImage
+    if (profileTransformerRef.current && profileImageRef.current && isProfileSelected) {
+      profileTransformerRef.current.nodes([profileImageRef.current]);
+      profileTransformerRef.current.getLayer().batchDraw();
     }
-  }, [isOverlaySelected]);
 
-  // Prevent stage from deselecting transformer when clicked
+    // Aplicar Transformer no classImage
+    if (overlayTransformerRef.current && overlayRef.current && isOverlaySelected) {
+      overlayTransformerRef.current.nodes([overlayRef.current]);
+      overlayTransformerRef.current.getLayer().batchDraw();
+    }
+  }, [isOverlaySelected, isProfileSelected]);
+
   const handleStageMouseDown = (e: any) => {
-    // Deselect only when the clicked area is not the overlay image
     const clickedOnEmpty = e.target === e.target.getStage();
     if (clickedOnEmpty) {
       setIsOverlaySelected(false);
+      setIsProfileSelected(false); // Desseleciona profileImage ao clicar no stage vazio
     }
   };
 
+  const getStageDimensions = () => {
+    const canvasWidth = Math.min(window.innerWidth * 0.9, 600);
+    const canvasHeight = Math.min(window.innerHeight * 0.6, 400);
+    return { width: canvasWidth, height: canvasHeight };
+  };
+
+  const { width, height } = getStageDimensions();
+
+  useEffect(() => {
+    if (profileImage) {
+      const scale = Math.min(width / profileImage.width, height / profileImage.height);
+      setProfileImageScale({ x: scale, y: scale });
+      const initialX = (width - profileImage.width * scale) / 2;
+      const initialY = (height - profileImage.height * scale) / 2;
+      setProfileImagePosition({ x: initialX, y: initialY });
+    }
+
+    if (classImage) {
+      const scale = Math.min(width / classImage.width, height / classImage.height);
+      setClassImageScale({ x: scale, y: scale });
+      const initialX = (width - classImage.width * scale) / 2;
+      const initialY = (height - classImage.height * scale) / 2;
+      setClassImagePosition({ x: initialX, y: initialY });
+    }
+  }, [profileImage, classImage, width, height]);
+
   return (
-    <Flex alignItems="center" gap="10px" direction="column">
+    <Flex
+      alignItems="center"
+      gap="10px"
+      direction={['column', 'column', 'row']}
+      p={4}
+      width="100%"
+    >
       {!isEditMode ? (
-        // Default View Mode with Avatar
         <>
-          <Avatar src={`/api/members/image/${profileImageId}`} size="2xl" />
-          <Flex>
+          <Avatar
+            src={`/api/members/image/${profileImageId}`}
+            size={['xl', '2xl']}
+          />
+          <Flex direction="column" alignItems="center" w="100%">
             <EditProfileImageButton
               memberId={memberId}
               onImageUpdate={handleImageUpdate}
             />
+            <Button size={['sm', 'md']} onClick={() => setIsEditMode(true)}>
+              Baixar Imagem
+            </Button>
           </Flex>
-          <Button onClick={handleEdit}>Baixar Imagem</Button>
         </>
       ) : (
-        // Edit Mode with Konva Stage
         <>
-          <Stage
-            width={profileImage?.width || 300}
-            height={profileImage?.height || 300}
-            ref={stageRef}
-            onMouseDown={handleStageMouseDown}
-            onTouchStart={handleStageMouseDown}
+          <Flex
+            overflow="hidden"
+            border="1px solid"
+            borderColor="gray.200"
+            borderRadius="md"
+            w="100%"
+            maxWidth="600px"
+            mx="auto"
           >
-            <Layer>
-              {/* Profile image as background */}
-              {profileImage && (
-                <KonvaImage
-                  image={profileImage}
-                  x={0}
-                  y={0}
-                />
-              )}
-              {/* Draggable and resizable overlay image */}
-              {classImage && (
-                <KonvaImage
-                  image={classImage}
-                  x={imagePosition.x}
-                  y={imagePosition.y}
-                  ref={overlayRef}
-                  scaleX={overlayScale.x}
-                  scaleY={overlayScale.y}
-                  draggable
-                  onClick={() => setIsOverlaySelected(true)}
-                  onTap={() => setIsOverlaySelected(true)}
-                  onDragEnd={(e) => {
-                    setImagePosition({ x: e.target.x(), y: e.target.y() });
-                  }}
-                  onTransformEnd={(e) => {
-                    // Update the scale of the overlay after resizing
-                    const node = overlayRef.current;
-                    const scaleX = node.scaleX();
-                    const scaleY = node.scaleY();
-
-                    setOverlayScale({ x: scaleX, y: scaleY });
-                    node.scaleX(1);
-                    node.scaleY(1);
-                  }}
-                />
-              )}
-              {/* Transformer for resizing */}
-              {isOverlaySelected && (
-                <Transformer
-                  ref={transformerRef}
-                  resizeEnabled={true}
-                  keepRatio={true}
-                  enabledAnchors={['top-left', 'top-right', 'bottom-left', 'bottom-right']}
-                />
-              )}
-            </Layer>
-          </Stage>
-          {/* Finalize Button to download and exit edit mode */}
+            <Stage
+              width={width}
+              height={height}
+              ref={stageRef}
+              onMouseDown={handleStageMouseDown}
+              onTouchStart={handleStageMouseDown}
+            >
+              <Layer>
+                {profileImage && (
+                  <KonvaImage
+                    image={profileImage}
+                    x={profileImagePosition.x}
+                    y={profileImagePosition.y}
+                    scaleX={profileImageScale.x}
+                    scaleY={profileImageScale.y}
+                    draggable
+                    ref={profileImageRef} // Referência do profileImage
+                    onClick={() => {
+                      setIsProfileSelected(true);
+                      setIsOverlaySelected(false); // Desseleciona class image
+                    }}
+                    onDragEnd={(e) => {
+                      setProfileImagePosition({
+                        x: e.target.x(),
+                        y: e.target.y(),
+                      });
+                    }}
+                    onTransformEnd={(e) => {
+                      const node = profileImageRef.current as any;
+                      const scaleX = node ? (node as any).scaleX() : 1;
+                      const scaleY = (node as any).scaleY();
+                      setProfileImageScale({ x: scaleX, y: scaleY });
+                      
+                        node.scaleX(1);
+                        node.scaleY(1);
+                      
+                    }}
+                  />
+                )}
+                {classImage && (
+                  <KonvaImage
+                    image={classImage}
+                    x={classImagePosition.x}
+                    y={classImagePosition.y}
+                    ref={overlayRef}
+                    scaleX={classImageScale.x}
+                    scaleY={classImageScale.y}
+                    draggable
+                    onClick={() => {
+                      setIsOverlaySelected(true);
+                      setIsProfileSelected(false); // Desseleciona profileImage
+                    }}
+                    onDragEnd={(e) => {
+                      setClassImagePosition({
+                        x: e.target.x(),
+                        y: e.target.y(),
+                      });
+                    }}
+                    onTransformEnd={(e) => {
+                      const node = overlayRef.current;
+                      const scaleX = node ? (node as any).scaleX() : 1;
+                      const scaleY = (node as any).scaleY();
+                      setClassImageScale({ x: scaleX, y: scaleY });
+                      (node as any).scaleX(1);
+                      (node as any).scaleY(1);
+                    }}
+                  />
+                )}
+                {isOverlaySelected && (
+                  <Transformer
+                    ref={overlayTransformerRef}
+                    resizeEnabled={true}
+                    keepRatio={true}
+                    enabledAnchors={['top-left', 'top-right', 'bottom-left', 'bottom-right']}
+                  />
+                )}
+                {isProfileSelected && (
+                  <Transformer
+                    ref={profileTransformerRef}
+                    resizeEnabled={true}
+                    keepRatio={true}
+                    enabledAnchors={['top-left', 'top-right', 'bottom-left', 'bottom-right']}
+                  />
+                )}
+              </Layer>
+            </Stage>
+          </Flex>
           <Button
             onClick={handleFinalizeAndDownload}
             isLoading={isLoading}
             loadingText="Baixando..."
+            size={['sm', 'md']}
+            mt={4}
           >
             Confirmar
           </Button>
