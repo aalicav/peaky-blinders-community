@@ -32,9 +32,9 @@ const DownloadOverlayImageButton: React.FC<DownloadOverlayImageButtonProps> = ({
 
   const stageRef = useRef(null);
   const overlayRef = useRef(null);
-  const profileImageRef = useRef(null); // Ref para o profileImage
-  const profileTransformerRef = useRef<any>(null); // Transformer para profileImage
-  const overlayTransformerRef = useRef<any>(null); // Transformer para classImage
+  const profileImageRef = useRef(null);
+  const profileTransformerRef = useRef<any>(null);
+  const overlayTransformerRef = useRef<any>(null);
 
   useEffect(() => {
     const loadImages = () => {
@@ -76,24 +76,31 @@ const DownloadOverlayImageButton: React.FC<DownloadOverlayImageButtonProps> = ({
   };
 
   useEffect(() => {
-    // Aplicar Transformer no profileImage
     if (profileTransformerRef.current && profileImageRef.current && isProfileSelected) {
       profileTransformerRef.current.nodes([profileImageRef.current]);
       profileTransformerRef.current.getLayer().batchDraw();
     }
 
-    // Aplicar Transformer no classImage
     if (overlayTransformerRef.current && overlayRef.current && isOverlaySelected) {
       overlayTransformerRef.current.nodes([overlayRef.current]);
       overlayTransformerRef.current.getLayer().batchDraw();
     }
   }, [isOverlaySelected, isProfileSelected]);
 
+  // Evento de clique ou toque no Stage
   const handleStageMouseDown = (e: any) => {
     const clickedOnEmpty = e.target === e.target.getStage();
     if (clickedOnEmpty) {
       setIsOverlaySelected(false);
-      setIsProfileSelected(false); // Desseleciona profileImage ao clicar no stage vazio
+      setIsProfileSelected(false);
+    }
+  };
+
+  const handleStageTouchStart = (e: any) => {
+    const touchedOnEmpty = e.target === e.target.getStage();
+    if (touchedOnEmpty) {
+      setIsOverlaySelected(false);
+      setIsProfileSelected(false);
     }
   };
 
@@ -124,24 +131,12 @@ const DownloadOverlayImageButton: React.FC<DownloadOverlayImageButtonProps> = ({
   }, [profileImage, classImage, width, height]);
 
   return (
-    <Flex
-      alignItems="center"
-      gap="10px"
-      direction={['column', 'column', 'row']}
-      p={4}
-      width="100%"
-    >
+    <Flex alignItems="center" gap="10px" direction={['column', 'column', 'row']} p={4} width="100%">
       {!isEditMode ? (
         <>
-          <Avatar
-            src={`/api/members/image/${profileImageId}`}
-            size={['xl', '2xl']}
-          />
+          <Avatar src={`/api/members/image/${profileImageId}`} size={['xl', '2xl']} />
           <Flex direction="column" alignItems="center" w="100%">
-            <EditProfileImageButton
-              memberId={memberId}
-              onImageUpdate={handleImageUpdate}
-            />
+            <EditProfileImageButton memberId={memberId} onImageUpdate={handleImageUpdate} />
             <Button size={['sm', 'md']} onClick={() => setIsEditMode(true)}>
               Baixar Imagem
             </Button>
@@ -149,21 +144,13 @@ const DownloadOverlayImageButton: React.FC<DownloadOverlayImageButtonProps> = ({
         </>
       ) : (
         <>
-          <Flex
-            overflow="hidden"
-            border="1px solid"
-            borderColor="gray.200"
-            borderRadius="md"
-            w="100%"
-            maxWidth="600px"
-            mx="auto"
-          >
+          <Flex overflow="hidden" border="1px solid" borderColor="gray.200" borderRadius="md" w="100%" maxWidth="600px" mx="auto">
             <Stage
               width={width}
               height={height}
               ref={stageRef}
               onMouseDown={handleStageMouseDown}
-              onTouchStart={handleStageMouseDown}
+              onTouchStart={handleStageTouchStart}
             >
               <Layer>
                 {profileImage && (
@@ -174,10 +161,14 @@ const DownloadOverlayImageButton: React.FC<DownloadOverlayImageButtonProps> = ({
                     scaleX={profileImageScale.x}
                     scaleY={profileImageScale.y}
                     draggable
-                    ref={profileImageRef} // Referência do profileImage
+                    ref={profileImageRef}
                     onClick={() => {
                       setIsProfileSelected(true);
-                      setIsOverlaySelected(false); // Desseleciona class image
+                      setIsOverlaySelected(false);
+                    }}
+                    onTouchStart={() => {
+                      setIsProfileSelected(true);
+                      setIsOverlaySelected(false);
                     }}
                     onDragEnd={(e) => {
                       setProfileImagePosition({
@@ -187,13 +178,11 @@ const DownloadOverlayImageButton: React.FC<DownloadOverlayImageButtonProps> = ({
                     }}
                     onTransformEnd={(e) => {
                       const node = profileImageRef.current as any;
-                      const scaleX = node ? (node as any).scaleX() : 1;
-                      const scaleY = (node as any).scaleY();
+                      const scaleX = node ? node.scaleX() : 1;
+                      const scaleY = node ? node.scaleY() : 1;
                       setProfileImageScale({ x: scaleX, y: scaleY });
-                      
-                        node.scaleX(1);
-                        node.scaleY(1);
-                      
+                      node.scaleX(1);
+                      node.scaleY(1);
                     }}
                   />
                 )}
@@ -208,7 +197,11 @@ const DownloadOverlayImageButton: React.FC<DownloadOverlayImageButtonProps> = ({
                     draggable
                     onClick={() => {
                       setIsOverlaySelected(true);
-                      setIsProfileSelected(false); // Desseleciona profileImage
+                      setIsProfileSelected(false);
+                    }}
+                    onTouchStart={() => {
+                      setIsOverlaySelected(true);
+                      setIsProfileSelected(false);
                     }}
                     onDragEnd={(e) => {
                       setClassImagePosition({
@@ -217,12 +210,12 @@ const DownloadOverlayImageButton: React.FC<DownloadOverlayImageButtonProps> = ({
                       });
                     }}
                     onTransformEnd={(e) => {
-                      const node = overlayRef.current;
-                      const scaleX = node ? (node as any).scaleX() : 1;
-                      const scaleY = (node as any).scaleY();
+                      const node = overlayRef.current as any;
+                      const scaleX = node ? node.scaleX() : 1;
+                      const scaleY = node ? node.scaleY() : 1;
                       setClassImageScale({ x: scaleX, y: scaleY });
-                      (node as any).scaleX(1);
-                      (node as any).scaleY(1);
+                      node.scaleX(1);
+                      node.scaleY(1);
                     }}
                   />
                 )}
@@ -245,13 +238,7 @@ const DownloadOverlayImageButton: React.FC<DownloadOverlayImageButtonProps> = ({
               </Layer>
             </Stage>
           </Flex>
-          <Button
-            onClick={handleFinalizeAndDownload}
-            isLoading={isLoading}
-            loadingText="Baixando..."
-            size={['sm', 'md']}
-            mt={4}
-          >
+          <Button onClick={handleFinalizeAndDownload} isLoading={isLoading} loadingText="Baixando..." size={['sm', 'md']} mt={4}>
             Confirmar
           </Button>
         </>
